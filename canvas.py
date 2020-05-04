@@ -4,7 +4,10 @@ from tkinter.colorchooser import askcolor
 from tkinter import ttk
 from tkinter.ttk import Progressbar
 from PIL import Image
-import numpy
+import cv2
+import numpy as np
+#import tensorflow as tf
+#from datetime import datetime
 
 class Write_num(object):
 
@@ -15,9 +18,9 @@ class Write_num(object):
         self.root = Tk()
         self.root.title("Know your Numbers!")
 
-        icon = tkinter.PhotoImage(file = "Rocket.png")
-        self.label = tkinter.Label(self.root, image = icon)
-        self.label.grid(row = 0, column = 0)
+        #icon = tkinter.PhotoImage(file = "Rocket.jpeg")
+        #self.label = tkinter.Label(self.root, image = icon)
+        #self.label.grid(row = 0, column = 0)
 
         self.pen_button = Button(self.root, text = 'pen')
         self.pen_button.grid(row = 0, column = 1)
@@ -36,7 +39,7 @@ class Write_num(object):
         style = ttk.Style()
         style.theme_use('default')
         style.configure("black.Horizontal.TProgressbar", background = 'blue')
-        self.bar = Progressbar(self.root, length=200, style='black.Horizontal.TProgressbar')
+        self.bar = Progressbar(self.root, length = 200, style ='black.Horizontal.TProgressbar')
         self.bar['value'] = 70
         self.bar.grid(row = 2, column = 0)
 
@@ -74,13 +77,24 @@ class Write_num(object):
         self.page.delete("all")
 
     def saveImage(self):
-        self.page.postscript(file = self.img_filename + '.eps')
+        img = self.page.postscript(file = self.img_filename + '.eps')
         img = Image.open(self.img_filename + '.eps')
-        img.save(self.img_filename + '.png', 'png')
-        img = img.resize((28, 28))
         img = img.convert('L')
-        img = numpy.array(img)
-        Image.fromarray(img).save(self.img_filename + '.png')
+        img.save(self.img_filename + '.jpeg', 'jpeg')
+        img = cv2.imread(self.img_filename + '.jpeg', 0)
+        shrunk = cv2.resize(img, (28, 28), interpolation = cv2.INTER_AREA)
+        shrunk = np.array(shrunk)
+        np.savetxt("imgdata.csv", shrunk, delimiter = ",")
+        #Image.fromarray(shrunk).save(self.img_filename + '.jpeg')
+        
+        #Titles =["Original", "Shrunk"]
+        #images =[image, shrunk]
+        #count = 2
+        #for i in range(count):
+        #    plt.subplot(2, 2, i + 1)
+        #    plt.title(Titles[i])
+        #    plt.imshow(images[i])
+        #plt.show()
 
     def reset(self, event):
         self.x1, self.y1 = None, None
