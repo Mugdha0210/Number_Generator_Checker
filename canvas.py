@@ -6,8 +6,10 @@ from tkinter.ttk import Progressbar
 from PIL import Image
 import cv2
 import numpy as np
+from datetime import datetime
+from scipy import ndimage
+import math
 #import tensorflow as tf
-#from datetime import datetime
 
 class Write_num(object):
 
@@ -18,7 +20,7 @@ class Write_num(object):
         self.root = Tk()
         self.root.title("Know your Numbers!")
 
-        #icon = tkinter.PhotoImage(file = "Rocket.jpeg")
+        #icon = tkinter.PhotoImage(file = "Rocket.png")
         #self.label = tkinter.Label(self.root, image = icon)
         #self.label.grid(row = 0, column = 0)
 
@@ -31,7 +33,7 @@ class Write_num(object):
         self.clear_button = Button(self.root, text = 'clear', command = self.clear)
         self.clear_button.grid(row = 0, column = 3)
 
-        self.check_button = Button(self.root, text = 'check', command = self.saveImage)
+        self.check_button = Button(self.root, text = 'check', command = self.preprocess)
         self.check_button.grid(row = 0, column = 4)
 
         self.img_filename = "hand_num"
@@ -76,17 +78,52 @@ class Write_num(object):
     def clear(self):
         self.page.delete("all")
 
-    def saveImage(self):
+    def preprocess(self):
         img = self.page.postscript(file = self.img_filename + '.eps')
         img = Image.open(self.img_filename + '.eps')
-        img = img.convert('L')
-        img.save(self.img_filename + '.jpeg', 'jpeg')
-        img = cv2.imread(self.img_filename + '.jpeg', 0)
-        shrunk = cv2.resize(img, (28, 28), interpolation = cv2.INTER_AREA)
-        shrunk = np.array(shrunk)
-        np.savetxt("imgdata.csv", shrunk, delimiter = ",")
-        #Image.fromarray(shrunk).save(self.img_filename + '.jpeg')
-        
+        #img = img.convert('L')
+        img.save(self.img_filename + '.png', 'png')
+        img = cv2.imread(self.img_filename + '.png', cv2.IMREAD_GRAYSCALE)     #grayscaling
+        img = cv2.resize(255 - img, (28, 28), interpolation = cv2.INTER_AREA)      #invert and shrink to 28*28
+        #arr_255 = np.full((28, 28), 255)
+        #img = arr_255 - img     #invert
+        (thresh, img) = cv2.threshold(img, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)   #thresholding
+
+        while np.sum(img[0]) == 0:     #cropping
+            img = img[1:]
+        while np.sum(img[:,0]) == 0:
+            img = np.delete(img,0,1)
+        while np.sum(img[-1]) == 0:
+            img = img[:-1]
+        while np.sum(img[:,-1]) == 0:
+            img = np.delete(img,-1,1)
+        rows,cols = img.shape
+
+        if rows > cols:         #fit to 20*20, adjust for aspect ratio
+            factor = 20.0/rows
+            rows = 20
+            cols = int(round(cols*factor))
+            img = cv2.resize(img, (cols,rows))
+        else:
+            factor = 20.0/cols
+            cols = 20
+            rows = int(round(rows*factor))
+            img = cv2.resize(img, (cols, rows))
+
+        colsPadding = (int(math.ceil((28-cols)/2.0)),int(math.floor((28-cols)/2.0)))    #padding to get 28*28
+        rowsPadding = (int(math.ceil((28-rows)/2.0)),int(math.floor((28-rows)/2.0)))
+        img = np.lib.pad(img,(rowsPadding,colsPadding),'constant')
+
+        shift_x, shift_y = self.getBestShift(img)        #centering in 28*28
+        shifted = self.shift(img, shift_x, shift_y)
+        img = shifted
+
+        cv2.imwrite(self.img_filename + str(datetime.now()) + '.png', img)
+        img = img.flatten() / 255.0
+        np.savetxt("imgdata" + str(datetime.now()) + ".csv", img, delimiter = ",")
+        #shrunk = np.array(shrunk)
+        #Image.fromarray(shrunk).save(self.img_filename + '.png')
+
         #Titles =["Original", "Shrunk"]
         #images =[image, shrunk]
         #count = 2
@@ -95,6 +132,19 @@ class Write_num(object):
         #    plt.title(Titles[i])
         #    plt.imshow(images[i])
         #plt.show()
+
+    def getBestShift(self, img):      #get adjustment for center of mass
+        cy,cx = ndimage.measurements.center_of_mass(img)
+        rows,cols = img.shape
+        shift_x = np.round(cols/2.0-cx).astype(int)
+        shift_y = np.round(rows/2.0-cy).astype(int)
+        return shift_x,shift_y
+
+    def shift(self, img, sx, sy):     #shift according to center of mass
+        rows, cols = img.shape
+        M = np.float32([[1, 0, sx], [0, 1, sy]])
+        shifted = cv2.warpAffine(img, M, (cols, rows))
+        return shifted
 
     def reset(self, event):
         self.x1, self.y1 = None, None
