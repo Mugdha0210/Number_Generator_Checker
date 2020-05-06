@@ -33,7 +33,7 @@ def testPNG(model, filename, number):
     my_data = my_data.reshape(1, 28, 28, 1)
     
     y_test = np.array([[0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]])
-    y_test[number] = 1.
+    y_test[[number]] = 1.
     score = model.evaluate(my_data, y_test, verbose=0) 
     accuracy = score[1]
     
