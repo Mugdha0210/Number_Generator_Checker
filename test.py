@@ -39,7 +39,8 @@ def testPNG(model, filename, number):
     
     #likelihood of each number in terms of probability
     prob_array = model.predict(my_data)
+    p = prob_array[0, number]
     
     #returns a probability array of size 1, 10
-    return [accuracy, prob_array]
+    return [accuracy, p]
 
