@@ -1,6 +1,6 @@
 import pyttsx3
 import random
-
+from . import convtodeva as deva
 #When user runs the prog, this func should be called
 #Also should be called every time a new number is to be drawn
 
@@ -51,11 +51,21 @@ def obtainNumber():
 #mag he pudcha function call karaycha
 
 #number to be drawn and accuracy of resultant drawing to be passed as parameters
-def accuracyTeller(number,accuracy):
-    if (accuracy >= 50 ): #50 is dummy value, we can change it later
-        return 1
-    else:
-        return 0
+def accuracyTeller(accuracy, probability):
+    if accuracy == 1 :
+        #Call function to Display Number-Name
+        #Call function to Display in devanagri
+    else :
+        #pass
+        #set devuni = None
+        #NumberName = None
+    #return [probability, devuni, NumberName]
+    
+    
+    #if (accuracy >= 50 ): #50 is dummy value, we can change it later
+     #   return 1
+    #else:
+     #   return 0
 
 # if 1 is returned, then valid drawing. So will print spelling (and Devanagari writing)? on the main screen
 # if 0 is returned, then drawing is invalid. So will print Wrong Drawing on the screen. Then will give a new number?
