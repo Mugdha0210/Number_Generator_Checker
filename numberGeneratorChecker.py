@@ -7,6 +7,9 @@ from . import convtodeva as deva
 def obtainNumber():
     numberToWrite = random.randint(0,9)
     engine = pyttsx3.init()
+    
+    newVoiceRate = 145
+    engine.setProperty('rate',newVoiceRate)
 
     if numberToWrite == 0:
         engine.say("Draw Zero")
