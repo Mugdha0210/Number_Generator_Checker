@@ -10,6 +10,9 @@ def obtainNumber():
     
     newVoiceRate = 145
     engine.setProperty('rate',newVoiceRate)
+    
+    sound = engine.getProperty('voices')
+    engine.setProperty('voice', sound[1].id)
 
     if numberToWrite == 0:
         engine.say("Zero")
