@@ -3,12 +3,14 @@ from tkinter import *
 from tkinter.colorchooser import askcolor
 from tkinter import ttk
 from tkinter.ttk import Progressbar
+import tkinter.font as tkFont
 from PIL import Image
 import cv2
 import numpy as np
 from datetime import datetime
 from scipy import ndimage
 import math
+import time
 #import tensorflow as tf
 
 class Write_num(object):
@@ -19,34 +21,53 @@ class Write_num(object):
     def __init__(self):
         self.root = Tk()
         self.root.title("Know your Numbers!")
+        self.root.geometry('{}x{}'.format(900, 750))
 
         #icon = tkinter.PhotoImage(file = "Rocket.png")
         #self.label = tkinter.Label(self.root, image = icon)
         #self.label.grid(row = 0, column = 0)
 
-        self.pen_button = Button(self.root, text = 'pen')
-        self.pen_button.grid(row = 0, column = 1)
+        self.page = Canvas(self.root, bg = 'white', width = 600, height = 600)
+        self.page.grid(row = 0, columnspan = 5)
 
-        self.color_button = Button(self.root, text = 'color', command = self.chooseColor)
-        self.color_button.grid(row = 0, column = 2)
+        self.style_bar = ttk.Style()
+        self.style_bar.theme_use('default')
+        self.style_bar.configure("black.Vertical.TProgressbar", background = 'red', thickness = 50, mode = "percent")
+        self.progress_var = tkinter.IntVar()
+        self.bar = Progressbar(self.root, length = 600, style = 'black.Vertical.TProgressbar', mode = 'determinate', var = self.progress_var)
+        self.bar['orient'] = "vertical"
+        self.bar.grid(row = 0, column = 6)
+        self.bar["value"] = 0
 
-        self.clear_button = Button(self.root, text = 'clear', command = self.clear)
-        self.clear_button.grid(row = 0, column = 3)
+        customFont = tkFont.Font(family = 'Noto Sans', size = 50)
+        self.display = Text(self.root, font = customFont, foreground = "purple", spacing1 = 10, spacing2 = 10, spacing3 = 10, height = 5)
+        self.display.grid(row = 0, column = 7)
+        self.display.config(state = NORMAL)
+        #THIS IS GOING TO GO SOMEWHERE ELSE
+        devauni = b'\u096A'
+        self.display.insert("1.0", devauni.decode('unicode-escape'))
+        self.display.tag_add("center", "1.0")
+        num_name = "\nfour"
+        self.display.insert("end", num_name)
+        self.display.config(state = DISABLED)
+        #self.display.delete(1.0, END)
 
-        self.check_button = Button(self.root, text = 'check', command = self.preprocess)
-        self.check_button.grid(row = 0, column = 4)
+        palette_icon = PhotoImage(file = r"./Icons/palette.png")
+        self.color_button = Button(self.root, image = palette_icon, bg = 'white', command = self.chooseColor)
+        self.color_button.icon = palette_icon
+        self.color_button.grid(row = 1, column = 0, ipadx = 15, ipady = 15, padx = 10, pady = 10)
+
+        eraser_icon = PhotoImage(file = r"./Icons/eraser.png")
+        self.clear_button = Button(self.root, image = eraser_icon, bg = 'white', command = self.showScore)
+        self.color_button.icon = eraser_icon
+        self.clear_button.grid(row = 1, column = 2, ipadx = 15, ipady = 15, padx = 10, pady = 10)
+
+        check_icon = PhotoImage(file = r"./Icons/check.png")
+        self.check_button = Button(self.root, image = check_icon, bg = 'white', command = self.preprocess)
+        self.color_button.icon = check_icon
+        self.check_button.grid(row = 1, column = 4, ipadx = 15, ipady = 15, padx = 10, pady = 10)
 
         self.img_filename = "hand_num"
-
-        style = ttk.Style()
-        style.theme_use('default')
-        style.configure("black.Horizontal.TProgressbar", background = 'blue')
-        self.bar = Progressbar(self.root, length = 200, style ='black.Horizontal.TProgressbar')
-        self.bar['value'] = 70
-        self.bar.grid(row = 2, column = 0)
-
-        self.page = Canvas(self.root, bg = 'white', width = 600, height = 600)
-        self.page.grid(row = 1, columnspan = 5)
 
         self.setup()
         self.root.mainloop()
@@ -57,8 +78,7 @@ class Write_num(object):
         self.line_width = self.DEFAULT_PEN_SIZE
         self.color = self.DEFAULT_COLOUR
         self.clear_on = False
-        self.active_button = self.pen_button
-        self.page.bind('<B1-Motion>', self.write)       #button-1 is left
+        self.page.bind('<B1-Motion>', self.write)       #button-1 is left click
         self.page.bind('<ButtonRelease-1>', self.reset)
 
     def write(self, event):
@@ -81,12 +101,9 @@ class Write_num(object):
     def preprocess(self):
         img = self.page.postscript(file = self.img_filename + '.eps')
         img = Image.open(self.img_filename + '.eps')
-        #img = img.convert('L')
         img.save(self.img_filename + '.png', 'png')
         img = cv2.imread(self.img_filename + '.png', cv2.IMREAD_GRAYSCALE)     #grayscaling
         img = cv2.resize(255 - img, (28, 28), interpolation = cv2.INTER_AREA)      #invert and shrink to 28*28
-        #arr_255 = np.full((28, 28), 255)
-        #img = arr_255 - img     #invert
         (thresh, img) = cv2.threshold(img, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)   #thresholding
 
         while np.sum(img[0]) == 0:     #cropping
@@ -145,6 +162,31 @@ class Write_num(object):
         M = np.float32([[1, 0, sx], [0, 1, sy]])
         shifted = cv2.warpAffine(img, M, (cols, rows))
         return shifted
+
+    def showScore(self) :
+        k = 0
+        accuracy = 87
+        if accuracy < 50 :
+            score = 1
+        else :
+            (quo, rem) = divmod(accuracy, 10)
+            if rem == 0 :
+                score = accuracy // 10
+            else :
+                score = (accuracy // 10) + 1
+        for i in range(0, score + 1):
+            self.progress_var.set(k)
+            print("STEP", i)
+            k += 10
+            time.sleep(0.1)
+            if self.bar["value"] > 70 :
+                self.style_bar.configure("black.Vertical.TProgressbar", background = 'lime green', thickness = 50, mode = "percent")
+            elif self.bar["value"] > 40 :
+                self.style_bar.configure("black.Vertical.TProgressbar", background = 'yellow', thickness = 50, mode = "percent")
+            else :
+                self.style_bar.configure("black.Vertical.TProgressbar", background = 'red', thickness = 50, mode = "percent")
+            self.bar.update_idletasks()
+        print(self.bar["value"])
 
     def reset(self, event):
         self.x1, self.y1 = None, None
