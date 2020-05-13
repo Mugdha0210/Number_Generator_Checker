@@ -7,38 +7,41 @@ import convtodeva as deva
 def obtainNumber():
     numberToWrite = random.randint(0,9)
     engine = pyttsx3.init()
+    
+    engine.setProperty('rate', 150) 
+    voices = engine.getProperty('voices')
+    engine.setProperty('voice', voices[0].id)
 
     if numberToWrite == 0:
-        engine.say("Draw Zero")
+        engine.say("Zero")
         engine.runAndWait()
     elif numberToWrite == 1:
-        engine.say("Draw One")
+        engine.say("One")
         engine.runAndWait()
     elif numberToWrite == 2:
-        engine.say("Draw Two")
+        engine.say("Two")
         engine.runAndWait()
     elif numberToWrite == 3:
-        engine.say("Draw Three")
+        engine.say("Three")
         engine.runAndWait()
     elif numberToWrite == 4:
-        engine.say("Draw Four")
+        engine.say("Four")
         engine.runAndWait()
     elif numberToWrite == 5:
-        #engine.say("Draw")
         engine.say("Five")
         engine.runAndWait()
     elif numberToWrite == 6:
-        engine.say("Draw Six")
+        engine.say("Six")
         engine.runAndWait()
     elif numberToWrite == 7:
-        engine.say("Draw Seven")
+        engine.say("Seven")
         engine.runAndWait()
     elif numberToWrite == 8:
         #engine.say("Draw")
         engine.say("Eight")
         engine.runAndWait()
     elif numberToWrite == 9:
-        engine.say("Draw Nine")
+        engine.say("Nine")
         engine.runAndWait()
 
     return numberToWrite
