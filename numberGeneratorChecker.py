@@ -10,7 +10,7 @@ def obtainNumber():
     
     engine.setProperty('rate', 150) 
     voices = engine.getProperty('voices')
-    engine.setProperty('voice', voices[0].id)
+    engine.setProperty('voice', voices[1].id)
 
     if numberToWrite == 0:
         engine.say("Zero")
