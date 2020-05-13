@@ -11,6 +11,8 @@ from datetime import datetime
 from scipy import ndimage
 import math
 import time
+import numberGeneratorChecker
+import convtodeva
 #import tensorflow as tf
 
 class Write_num(object):
@@ -23,12 +25,18 @@ class Write_num(object):
         self.root.title("Know your Numbers!")
         self.root.geometry('{}x{}'.format(900, 750))
 
-        #icon = tkinter.PhotoImage(file = "Rocket.png")
         #self.label = tkinter.Label(self.root, image = icon)
         #self.label.grid(row = 0, column = 0)
 
         self.page = Canvas(self.root, bg = 'white', width = 600, height = 600)
         self.page.grid(row = 0, columnspan = 5)
+        self.page.config(state = DISABLED)
+
+        new_icon = tkinter.PhotoImage(file = r"./Icons/Rocket.png")
+        self.new_button = Button(self.root, image = new_icon, bg = "yellow", command = self.allowDrawing)
+        self.new_button.configure(width = 600, height = 600, relief = RAISED)
+        self.new_button_window = self.page.create_window(10, 10, window = self.new_button)
+        self.new_button.grid(row = 0, columnspan = 5, ipady = 20)
 
         self.style_bar = ttk.Style()
         self.style_bar.theme_use('default')
@@ -37,20 +45,13 @@ class Write_num(object):
         self.bar = Progressbar(self.root, length = 600, style = 'black.Vertical.TProgressbar', mode = 'determinate', var = self.progress_var)
         self.bar['orient'] = "vertical"
         self.bar.grid(row = 0, column = 6)
-        self.bar["value"] = 0
+        #self.bar["value"] = 0
 
         customFont = tkFont.Font(family = 'Noto Sans', size = 50)
         self.display = Text(self.root, font = customFont, foreground = "purple", spacing1 = 10, spacing2 = 10, spacing3 = 10, height = 5)
         self.display.grid(row = 0, column = 7)
-        self.display.config(state = NORMAL)
-        #THIS IS GOING TO GO SOMEWHERE ELSE
-        devauni = b'\u096A'
-        self.display.insert("1.0", devauni.decode('unicode-escape'))
         self.display.tag_add("center", "1.0")
-        num_name = "\nfour"
-        self.display.insert("end", num_name)
         self.display.config(state = DISABLED)
-        #self.display.delete(1.0, END)
 
         palette_icon = PhotoImage(file = r"./Icons/palette.png")
         self.color_button = Button(self.root, image = palette_icon, bg = 'white', command = self.chooseColor)
@@ -58,7 +59,7 @@ class Write_num(object):
         self.color_button.grid(row = 1, column = 0, ipadx = 15, ipady = 15, padx = 10, pady = 10)
 
         eraser_icon = PhotoImage(file = r"./Icons/eraser.png")
-        self.clear_button = Button(self.root, image = eraser_icon, bg = 'white', command = self.showScore)
+        self.clear_button = Button(self.root, image = eraser_icon, bg = 'white', command = self.clear)
         self.color_button.icon = eraser_icon
         self.clear_button.grid(row = 1, column = 2, ipadx = 15, ipady = 15, padx = 10, pady = 10)
 
@@ -79,7 +80,14 @@ class Write_num(object):
         self.color = self.DEFAULT_COLOUR
         self.clear_on = False
         self.page.bind('<B1-Motion>', self.write)       #button-1 is left click
-        self.page.bind('<ButtonRelease-1>', self.reset)
+        self.page.bind('<ButtonRelease-1>', self.penup)
+
+    def allowDrawing(self) :
+        self.new_button.grid_remove()
+        self.new_button["state"] = DISABLED
+        self.givenNum = numberGeneratorChecker.obtainNumber()
+        self.page.config(state = NORMAL)
+
 
     def write(self, event):
         self.line_width = self.DEFAULT_PEN_SIZE
@@ -99,6 +107,7 @@ class Write_num(object):
         self.page.delete("all")
 
     def preprocess(self):
+        self.page.config(state = DISABLED)
         img = self.page.postscript(file = self.img_filename + '.eps')
         img = Image.open(self.img_filename + '.eps')
         img.save(self.img_filename + '.png', 'png')
@@ -138,6 +147,10 @@ class Write_num(object):
         cv2.imwrite(self.img_filename + str(datetime.now()) + '.png', img)
         img = img.flatten() / 255.0
         np.savetxt("imgdata" + str(datetime.now()) + ".csv", img, delimiter = ",")
+        #pass csv to Mugdha
+        #will return accuracy
+        self.accuracy = 74
+        self.showScore()
         #shrunk = np.array(shrunk)
         #Image.fromarray(shrunk).save(self.img_filename + '.png')
 
@@ -165,18 +178,17 @@ class Write_num(object):
 
     def showScore(self) :
         k = 0
-        accuracy = 87
-        if accuracy < 50 :
+        if self.accuracy < 50 :
             score = 1
         else :
-            (quo, rem) = divmod(accuracy, 10)
+            (quo, rem) = divmod(self.accuracy, 10)
             if rem == 0 :
-                score = accuracy // 10
+                score = self.accuracy // 10
             else :
-                score = (accuracy // 10) + 1
+                score = (self.accuracy // 10) + 1
         for i in range(0, score + 1):
             self.progress_var.set(k)
-            print("STEP", i)
+            #print("STEP", i)
             k += 10
             time.sleep(0.1)
             if self.bar["value"] > 70 :
@@ -186,10 +198,41 @@ class Write_num(object):
             else :
                 self.style_bar.configure("black.Vertical.TProgressbar", background = 'red', thickness = 50, mode = "percent")
             self.bar.update_idletasks()
-        print(self.bar["value"])
+        #print(self.bar["value"])
+        if self.bar["value"] > 40 :
+            self.devauni, self.numName = convtodeva.obtaindeva(self.givenNum)
+            self.displayNum()
+        else :
+            print("WRONG")
 
-    def reset(self, event):
+    def displayNum(self) :
+        self.display.config(state = NORMAL)
+        #devauni = b'\u096A'
+        self.display.insert("1.0", self.devauni.decode('unicode-escape'))
+        #num_name = "\nfour"
+        self.display.insert(END, self.numName)
+        self.display.config(state = DISABLED)
+        self.root.after(4000, self.reset())
+        #time.sleep(4)
+        #self.reset()
+
+    def penup(self, event) :
         self.x1, self.y1 = None, None
+
+    def reset(self) :
+        print("resetting")
+        #self.display.config(state = NORMAL)
+        self.progress_var.set(0)
+        self.bar.update_idletasks()
+        self.page.config(state = NORMAL)
+        self.page.delete("all")
+        self.page.config(state = DISABLED)
+        self.display.config(state = NORMAL)
+        self.display.delete(1.0, END)
+        self.display.config(state = DISABLED)
+        self.new_button.config(state = NORMAL)
+        self.new_button.grid()
+        print(self.bar['value'])
 
 
 if __name__ == '__main__':
