@@ -1,48 +1,44 @@
 import pyttsx3
 import random
-from . import convtodeva as deva
+import convtodeva as deva
 #When user runs the prog, this func should be called
 #Also should be called every time a new number is to be drawn
 
 def obtainNumber():
     numberToWrite = random.randint(0,9)
     engine = pyttsx3.init()
-    
-    newVoiceRate = 145
-    engine.setProperty('rate',newVoiceRate)
-    
-    sound = engine.getProperty('voices')
-    engine.setProperty('voice', sound[1].id)
 
     if numberToWrite == 0:
-        engine.say("Zero")
+        engine.say("Draw Zero")
         engine.runAndWait()
     elif numberToWrite == 1:
-        engine.say("One")
+        engine.say("Draw One")
         engine.runAndWait()
     elif numberToWrite == 2:
-        engine.say("Two")
+        engine.say("Draw Two")
         engine.runAndWait()
     elif numberToWrite == 3:
-        engine.say("Three")
+        engine.say("Draw Three")
         engine.runAndWait()
     elif numberToWrite == 4:
-        engine.say("Four")
+        engine.say("Draw Four")
         engine.runAndWait()
     elif numberToWrite == 5:
+        #engine.say("Draw")
         engine.say("Five")
         engine.runAndWait()
     elif numberToWrite == 6:
-        engine.say("Six")
+        engine.say("Draw Six")
         engine.runAndWait()
     elif numberToWrite == 7:
-        engine.say("Seven")
+        engine.say("Draw Seven")
         engine.runAndWait()
     elif numberToWrite == 8:
+        #engine.say("Draw")
         engine.say("Eight")
         engine.runAndWait()
     elif numberToWrite == 9:
-        engine.say("Nine")
+        engine.say("Draw Nine")
         engine.runAndWait()
 
     return numberToWrite
@@ -59,15 +55,18 @@ def obtainNumber():
 #number to be drawn and accuracy of resultant drawing to be passed as parameters
 def accuracyTeller(accuracy, probability):
     if accuracy == 1 :
+        pass
         #Call function to Display Number-Name
         #Call function to Display in devanagri
     else :
-        #pass
+        pass
         #set devuni = None
         #NumberName = None
     #return [probability, devuni, NumberName]
-    
-    
+
+if __name__ == '__main__':
+    num = obtainNumber()
+    print(num)
     #if (accuracy >= 50 ): #50 is dummy value, we can change it later
      #   return 1
     #else:

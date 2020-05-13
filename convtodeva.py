@@ -2,26 +2,37 @@
 #send number to be drawn as argument, receive corresponding devanagari value stores in devauni
 def obtaindeva(numtoprint):
     if (numtoprint == 0):
-        devauni = u'\u0966'
+        devauni = b'\u0966'
+        numName = "\nzero"
     elif (numtoprint == 1):
-        devauni = u'\u0967'
+        devauni = b'\u0967'
+        numName = "\none"
     elif (numtoprint == 2):
-        devauni = u'\u0968'
+        devauni = b'\u0968'
+        numName = "\ntwo"
     elif (numtoprint == 3):
-        devauni = u'\u0969'
+        devauni = b'\u0969'
+        numName = "\nthree"
     elif (numtoprint == 4):
-        devauni = u'\u0970'
+        devauni = b'\u096A'
+        numName = "\nfour"
     elif (numtoprint == 5):
-        devauni = u'\u0971'
+        devauni = b'\u096B'
+        numName = "\nfive"
     elif (numtoprint == 6):
-        devauni = u'\u0972'
+        devauni = b'\u096C'
+        numName = "\nsix"
     elif (numtoprint == 7):
-        devauni = u'\u0973'
+        devauni = b'\u096D'
+        numName = "\nseven"
     elif (numtoprint == 8):
-        devauni = u'\u0974'
+        devauni = b'\u096E'
+        numName = "\neight"
     elif (numtoprint == 9):
-        devauni = u'\u0975'
-    print(devauni)
+        devauni = b'\u096F'
+        numName = "\nnine"
+    print(devauni, numName)
+    return (devauni, numName)
 
 #will print the number in the terminal
 #dont know where we have to print it on the display
