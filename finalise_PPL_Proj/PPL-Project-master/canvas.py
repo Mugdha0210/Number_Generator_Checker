@@ -164,6 +164,7 @@ class Write_num(object):
             numProb = int(numProb * 100)
             #will return accuracy
             self.accuracy = numProb
+            print("self.accuracy is :", self.accuracy)
         self.showScore()
         #shrunk = np.array(shrunk)
         #Image.fromarray(shrunk).save(self.img_filename + '.png')

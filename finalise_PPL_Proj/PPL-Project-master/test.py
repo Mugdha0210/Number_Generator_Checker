@@ -35,10 +35,11 @@ def testPNG(model, filename, number):
     
     y_test = np.array([[0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]])
     y_test[0, number] = 1.
+    print(y_test)
     model.compile(loss=keras.losses.categorical_crossentropy, optimizer=keras.optimizers.Adadelta(), metrics=['accuracy'])
     score = model.evaluate(my_data, y_test, verbose=0) 
     accuracy = score[1]
-    
+    print("Accuracy is :" , accuracy)
     #likelihood of each number in terms of probability
     prob_array = model.predict(my_data)
     p = prob_array[0, number]
