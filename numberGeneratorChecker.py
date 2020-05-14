@@ -1,6 +1,7 @@
 import pyttsx3
 import random
 import convtodeva as deva
+import time
 #When user runs the prog, this func should be called
 #Also should be called every time a new number is to be drawn
 
@@ -14,33 +15,52 @@ def obtainNumber():
 
     if numberToWrite == 0:
         engine.say("Zero")
+        time.sleep(1)
+        engine.say("Zero")
         engine.runAndWait()
     elif numberToWrite == 1:
+        engine.say("One")
+        time.sleep(1)
         engine.say("One")
         engine.runAndWait()
     elif numberToWrite == 2:
         engine.say("Two")
+        time.sleep(1)
+        engine.say("Two")
         engine.runAndWait()
     elif numberToWrite == 3:
+        engine.say("Three")
+        time.sleep(1)
         engine.say("Three")
         engine.runAndWait()
     elif numberToWrite == 4:
         engine.say("Four")
+        time.sleep(1)
+        engine.say("Four")
         engine.runAndWait()
     elif numberToWrite == 5:
+        engine.say("Five")
+        time.sleep(1)
         engine.say("Five")
         engine.runAndWait()
     elif numberToWrite == 6:
         engine.say("Six")
+        time.sleep(1)
+        engine.say("Six")
         engine.runAndWait()
     elif numberToWrite == 7:
         engine.say("Seven")
+        time.sleep(1)
+        engine.say("Seven")
         engine.runAndWait()
     elif numberToWrite == 8:
-        #engine.say("Draw")
+        engine.say("Eight")
+        time.sleep(1)
         engine.say("Eight")
         engine.runAndWait()
     elif numberToWrite == 9:
+        engine.say("Nine")
+        time.sleep(1)
         engine.say("Nine")
         engine.runAndWait()
 
