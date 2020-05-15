@@ -1,4 +1,4 @@
-import pyttsx3
+from pygame import mixer
 import random
 import convtodeva as deva
 import time
@@ -7,62 +7,70 @@ import time
 
 def obtainNumber():
     numberToWrite = random.randint(0,9)
-    engine = pyttsx3.init()
-    
-    engine.setProperty('rate', 150) 
-    voices = engine.getProperty('voices')
-    engine.setProperty('voice', voices[1].id)
+
+    mixer.init()
+
 
     if numberToWrite == 0:
-        engine.say("Zero")
+        mixer.music.load("./zero.mp3")
+        mixer.music.play
         time.sleep(1)
-        engine.say("Zero")
-        engine.runAndWait()
+        mixer.music.load("./zero.mp3")
+        mixer.music.play
     elif numberToWrite == 1:
-        engine.say("One")
+        mixer.music.load("./one.mp3")
+        mixer.music.play
         time.sleep(1)
-        engine.say("One")
-        engine.runAndWait()
+        mixer.music.load("./one.mp3")
+        mixer.music.play
     elif numberToWrite == 2:
-        engine.say("Two")
+        mixer.music.load("./two.mp3")
+        mixer.music.play
         time.sleep(1)
-        engine.say("Two")
-        engine.runAndWait()
+        mixer.music.load("./two.mp3")
+        mixer.music.play
     elif numberToWrite == 3:
-        engine.say("Three")
+        mixer.music.load("./three.mp3")
+        mixer.music.play
         time.sleep(1)
-        engine.say("Three")
-        engine.runAndWait()
+        mixer.music.load("./three.mp3")
+        mixer.music.play
     elif numberToWrite == 4:
-        engine.say("Four")
+        mixer.music.load("./four.mp3")
+        mixer.music.play
         time.sleep(1)
-        engine.say("Four")
-        engine.runAndWait()
+        mixer.music.load("./four.mp3")
+        mixer.music.play
     elif numberToWrite == 5:
-        engine.say("Five")
+        mixer.music.load("./five.mp3")
+        mixer.music.play
         time.sleep(1)
-        engine.say("Five")
-        engine.runAndWait()
+        mixer.music.load("./five.mp3")
+        mixer.music.play
     elif numberToWrite == 6:
-        engine.say("Six")
+        mixer.music.load("./six.mp3")
+        mixer.music.play
         time.sleep(1)
-        engine.say("Six")
-        engine.runAndWait()
+        mixer.music.load("./six.mp3")
+        mixer.music.play
     elif numberToWrite == 7:
-        engine.say("Seven")
+        mixer.music.load("./seven.mp3")
+        mixer.music.play
         time.sleep(1)
-        engine.say("Seven")
-        engine.runAndWait()
+        mixer.music.load("./seven.mp3")
+        mixer.music.play
     elif numberToWrite == 8:
-        engine.say("Eight")
+        mixer.music.load("./eight.mp3")
+        mixer.music.play
         time.sleep(1)
-        engine.say("Eight")
-        engine.runAndWait()
+        mixer.music.load("./eight.mp3")
+        mixer.music.play
     elif numberToWrite == 9:
-        engine.say("Nine")
+        mixer.music.load("./nine.mp3")
+        mixer.music.play
         time.sleep(1)
-        engine.say("Nine")
-        engine.runAndWait()
+        mixer.music.load("./nine.mp3")
+        mixer.music.play
 
     return numberToWrite
 
