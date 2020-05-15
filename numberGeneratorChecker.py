@@ -1,76 +1,55 @@
-from pygame import mixer
+from playsound import playsound
 import random
 import convtodeva as deva
 import time
 #When user runs the prog, this func should be called
 #Also should be called every time a new number is to be drawn
 
+
 def obtainNumber():
     numberToWrite = random.randint(0,9)
 
-    mixer.init()
-
 
     if numberToWrite == 0:
-        mixer.music.load("./zero.mp3")
-        mixer.music.play
+        playsound('./zero.mp3')
         time.sleep(1)
-        mixer.music.load("./zero.mp3")
-        mixer.music.play
+        playsound('./zero.mp3')
     elif numberToWrite == 1:
-        mixer.music.load("./one.mp3")
-        mixer.music.play
+        playsound('./one.mp3')
         time.sleep(1)
-        mixer.music.load("./one.mp3")
-        mixer.music.play
+        playsound('./one.mp3')
     elif numberToWrite == 2:
-        mixer.music.load("./two.mp3")
-        mixer.music.play
+        playsound('./two.mp3')
         time.sleep(1)
-        mixer.music.load("./two.mp3")
-        mixer.music.play
+        playsound('./two.mp3')
     elif numberToWrite == 3:
-        mixer.music.load("./three.mp3")
-        mixer.music.play
+        playsound('./three.mp3')
         time.sleep(1)
-        mixer.music.load("./three.mp3")
-        mixer.music.play
+        playsound('./three.mp3')
     elif numberToWrite == 4:
-        mixer.music.load("./four.mp3")
-        mixer.music.play
+        playsound('./four.mp3')
         time.sleep(1)
-        mixer.music.load("./four.mp3")
-        mixer.music.play
+        playsound('./four.mp3')
     elif numberToWrite == 5:
-        mixer.music.load("./five.mp3")
-        mixer.music.play
+        playsound('./five.mp3')
         time.sleep(1)
-        mixer.music.load("./five.mp3")
-        mixer.music.play
+        playsound('./five.mp3')
     elif numberToWrite == 6:
-        mixer.music.load("./six.mp3")
-        mixer.music.play
+        playsound('./six.mp3')
         time.sleep(1)
-        mixer.music.load("./six.mp3")
-        mixer.music.play
+        playsound('./six.mp3')
     elif numberToWrite == 7:
-        mixer.music.load("./seven.mp3")
-        mixer.music.play
+        playsound('./seven.mp3')
         time.sleep(1)
-        mixer.music.load("./seven.mp3")
-        mixer.music.play
+        playsound('./seven.mp3')
     elif numberToWrite == 8:
-        mixer.music.load("./eight.mp3")
-        mixer.music.play
+        playsound('./eight.mp3')
         time.sleep(1)
-        mixer.music.load("./eight.mp3")
-        mixer.music.play
+        playsound('./eight.mp3')
     elif numberToWrite == 9:
-        mixer.music.load("./nine.mp3")
-        mixer.music.play
+        playsound('./nine.mp3')
         time.sleep(1)
-        mixer.music.load("./nine.mp3")
-        mixer.music.play
+        playsound('./nine.mp3')
 
     return numberToWrite
 
@@ -82,6 +61,9 @@ def obtainNumber():
 #OnSubmit event to be triggered
 #Accuracy checked by Mugdhas method
 #mag he pudcha function call karaycha
+
+def tryagain():
+    playsound('./tryagain.mp3')
 
 #number to be drawn and accuracy of resultant drawing to be passed as parameters
 def accuracyTeller(accuracy, probability):
