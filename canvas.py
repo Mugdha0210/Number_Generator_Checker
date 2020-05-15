@@ -32,7 +32,7 @@ class Write_num(object):
         self.page.grid(row = 0, columnspan = 5)
         self.page.config(state = DISABLED)
 
-        new_icon = tkinter.PhotoImage(file = r"./Icons/Rocket.png")
+        new_icon = tkinter.PhotoImage(file = r"./Icons/hand.png")
         self.new_button = Button(self.root, image = new_icon, bg = "yellow", command = self.allowDrawing)
         self.new_button.configure(width = 600, height = 600, relief = RAISED)
         self.new_button_window = self.page.create_window(10, 10, window = self.new_button)
