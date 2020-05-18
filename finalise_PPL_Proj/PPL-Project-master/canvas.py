@@ -13,8 +13,6 @@ import math
 import time
 import numberGeneratorChecker
 import convtodeva
-import test
-#import model
 #import tensorflow as tf
 
 class Write_num(object):
@@ -32,9 +30,9 @@ class Write_num(object):
 
         self.page = Canvas(self.root, bg = 'white', width = 600, height = 600)
         self.page.grid(row = 0, columnspan = 5)
-        self.page.config(state = DISABLED)
+        self.page.config(state = "disabled")
 
-        new_icon = tkinter.PhotoImage(file = r"./Icons/Rocket.png")
+        new_icon = tkinter.PhotoImage(file = r"./Icons/hand.png")
         self.new_button = Button(self.root, image = new_icon, bg = "yellow", command = self.allowDrawing)
         self.new_button.configure(width = 600, height = 600, relief = RAISED)
         self.new_button_window = self.page.create_window(10, 10, window = self.new_button)
@@ -49,33 +47,32 @@ class Write_num(object):
         self.bar.grid(row = 0, column = 6)
         #self.bar["value"] = 0
 
-        customFont = tkFont.Font(family = 'NotoSans', size = 50)
+        customFont = tkFont.Font(family = 'Noto Sans', size = 50)
         self.display = Text(self.root, font = customFont, foreground = "purple", spacing1 = 10, spacing2 = 10, spacing3 = 10, height = 5)
         self.display.grid(row = 0, column = 7)
         self.display.tag_add("center", "1.0")
-        self.display.config(state = DISABLED)
+        self.display.config(state = "disabled")
 
         palette_icon = PhotoImage(file = r"./Icons/palette.png")
         self.color_button = Button(self.root, image = palette_icon, bg = 'white', command = self.chooseColor)
-        self.color_button.icon = palette_icon
+        #self.color_button.icon = palette_icon
         self.color_button.grid(row = 1, column = 0, ipadx = 15, ipady = 15, padx = 10, pady = 10)
+        self.color_button.config(state = "disabled")
 
         eraser_icon = PhotoImage(file = r"./Icons/eraser.png")
         self.clear_button = Button(self.root, image = eraser_icon, bg = 'white', command = self.clear)
-        self.color_button.icon = eraser_icon
+        #self.clear_button.icon = eraser_icon
         self.clear_button.grid(row = 1, column = 2, ipadx = 15, ipady = 15, padx = 10, pady = 10)
+        self.clear_button.config(state = "disabled")
 
         check_icon = PhotoImage(file = r"./Icons/check.png")
         self.check_button = Button(self.root, image = check_icon, bg = 'white', command = self.preprocess)
-        self.color_button.icon = check_icon
+        #self.check_button.icon = check_icon
         self.check_button.grid(row = 1, column = 4, ipadx = 15, ipady = 15, padx = 10, pady = 10)
+        self.check_button.config(state = "disabled")
 
         self.img_filename = "hand_num"
-        #call model
-        
-        self.model = test.loadModel()
-        print("______Model loaded_________")
-        
+
         self.setup()
         self.root.mainloop()
 
@@ -91,9 +88,11 @@ class Write_num(object):
     def allowDrawing(self) :
         self.new_button.grid_remove()
         self.new_button["state"] = DISABLED
+        self.color_button.config(state = "normal")
+        self.clear_button.config(state = "normal")
+        self.check_button.config(state = "normal")
         self.givenNum = numberGeneratorChecker.obtainNumber()
-        self.page.config(state = NORMAL)
-
+        self.page.config(state = "normal")
 
     def write(self, event):
         self.line_width = self.DEFAULT_PEN_SIZE
@@ -113,70 +112,73 @@ class Write_num(object):
         self.page.delete("all")
 
     def preprocess(self):
-        self.page.config(state = DISABLED)
+        self.page.config(state = "disabled")
+        self.color_button.config(state = "disabled")
+        self.clear_button.config(state = "disabled")
+        self.check_button.config(state = "disabled")
         img = self.page.postscript(file = self.img_filename + '.eps')
         img = Image.open(self.img_filename + '.eps')
         img.save(self.img_filename + '.png', 'png')
         img = cv2.imread(self.img_filename + '.png', cv2.IMREAD_GRAYSCALE)     #grayscaling
+        if img.all() == 255 :
+            print("Draw something!")
         img = cv2.resize(255 - img, (28, 28), interpolation = cv2.INTER_AREA)      #invert and shrink to 28*28
         (thresh, img) = cv2.threshold(img, 128, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)   #thresholding
 
-        while np.sum(img[0]) == 0:     #cropping
-            img = img[1:]
-        while np.sum(img[:,0]) == 0:
-            img = np.delete(img,0,1)
-        while np.sum(img[-1]) == 0:
-            img = img[:-1]
-        while np.sum(img[:,-1]) == 0:
-            img = np.delete(img,-1,1)
-        rows,cols = img.shape
+        try :
+            while np.sum(img[0]) == 0:     #cropping will give traceback if canvas blank.
+                img = img[1:]
+            while np.sum(img[:,0]) == 0:
+                img = np.delete(img,0,1)
+            while np.sum(img[-1]) == 0:
+                img = img[:-1]
+            while np.sum(img[:,-1]) == 0:
+                img = np.delete(img,-1,1)
+            rows,cols = img.shape
 
-        if rows > cols:         #fit to 20*20, adjust for aspect ratio
-            factor = 20.0/rows
-            rows = 20
-            cols = int(round(cols*factor))
-            img = cv2.resize(img, (cols,rows))
-        else:
-            factor = 20.0/cols
-            cols = 20
-            rows = int(round(rows*factor))
-            img = cv2.resize(img, (cols, rows))
+            if rows > cols:         #fit to 20*20, adjust for aspect ratio
+                factor = 20.0/rows
+                rows = 20
+                cols = int(round(cols*factor))
+                img = cv2.resize(img, (cols,rows))
+            else:
+                factor = 20.0/cols
+                cols = 20
+                rows = int(round(rows*factor))
+                img = cv2.resize(img, (cols, rows))
 
-        colsPadding = (int(math.ceil((28-cols)/2.0)),int(math.floor((28-cols)/2.0)))    #padding to get 28*28
-        rowsPadding = (int(math.ceil((28-rows)/2.0)),int(math.floor((28-rows)/2.0)))
-        img = np.lib.pad(img,(rowsPadding,colsPadding),'constant')
+            colsPadding = (int(math.ceil((28-cols)/2.0)),int(math.floor((28-cols)/2.0)))    #padding to get 28*28
+            rowsPadding = (int(math.ceil((28-rows)/2.0)),int(math.floor((28-rows)/2.0)))
+            img = np.lib.pad(img,(rowsPadding,colsPadding),'constant')
 
-        shift_x, shift_y = self.getBestShift(img)        #centering in 28*28
-        shifted = self.shift(img, shift_x, shift_y)
-        img = shifted
+            shift_x, shift_y = self.getBestShift(img)        #centering in 28*28
+            shifted = self.shift(img, shift_x, shift_y)
+            img = shifted
 
-        cv2.imwrite(self.img_filename + '.png', img)
-        img = img.flatten() / 255.0
-        #name = "imgdata" + str(datetime.now()) + ".csv"
-        np.savetxt("imgdata.csv", img, delimiter = ",")
-        #pass csv to Mugdha
-        arr = test.testPNG(self.model, "imgdata.csv", self.givenNum)
-        self.modelAccuracy = arr[0]
-        if self.modelAccuracy == 0:
-            self.accuracy = 0
-        if self.modelAccuracy == 1:
-            numProb = arr[1]
-            numProb = int(numProb * 100)
+            cv2.imwrite(self.img_filename + '.png', img)
+            img = img.flatten() / 255.0
+            np.savetxt("imgdata.csv", img, delimiter = ",")
+            #pass csv to Mugdha
             #will return accuracy
-            self.accuracy = numProb
-            print("self.accuracy is :", self.accuracy)
-        self.showScore()
-        #shrunk = np.array(shrunk)
-        #Image.fromarray(shrunk).save(self.img_filename + '.png')
+            self.accuracy = 10
+            self.showScore()
+            self.bar.update_idletasks()
 
-        #Titles =["Original", "Shrunk"]
-        #images =[image, shrunk]
-        #count = 2
-        #for i in range(count):
-        #    plt.subplot(2, 2, i + 1)
-        #    plt.title(Titles[i])
-        #    plt.imshow(images[i])
-        #plt.show()
+            #shrunk = np.array(shrunk)
+            #Image.fromarray(shrunk).save(self.img_filename + '.png')
+
+            #Titles =["Original", "Shrunk"]
+            #images =[image, shrunk]
+            #count = 2
+            #for i in range(count):
+            #    plt.subplot(2, 2, i + 1)
+            #    plt.title(Titles[i])
+            #    plt.imshow(images[i])
+            #plt.show()
+
+        except :        #canvas was blank when check button clicked.
+            numberGeneratorChecker.retryInstruction()
+            self.reset()
 
     def getBestShift(self, img):      #get adjustment for center of mass
         cy,cx = ndimage.measurements.center_of_mass(img)
@@ -218,17 +220,18 @@ class Write_num(object):
             self.devauni, self.numName = convtodeva.obtaindeva(self.givenNum)
             self.displayNum()
         else :
-            print("WRONG")
+            numberGeneratorChecker.retryInstruction()
+            self.reset()
 
     def displayNum(self) :
-        self.display.config(state = NORMAL)
+        self.display.config(state = "normal")
         #devauni = b'\u096A'
         self.display.insert("1.0", self.devauni.decode('unicode-escape'))
-        
         #num_name = "\nfour"
         self.display.insert(END, self.numName)
-        self.display.config(state = DISABLED)
-        self.root.after(7000, self.reset())
+        self.display.config(state = "disabled")
+        self.bar.update_idletasks()
+        self.root.after(4000, self.reset())
         #time.sleep(4)
         #self.reset()
 
@@ -237,18 +240,18 @@ class Write_num(object):
 
     def reset(self) :
         print("resetting")
-        #self.display.config(state = NORMAL)
+        #self.display.config(state = "normal")
         self.progress_var.set(0)
         self.bar.update_idletasks()
-        self.page.config(state = NORMAL)
+        self.page.config(state = "normal")
         self.page.delete("all")
-        self.page.config(state = DISABLED)
-        self.display.config(state = NORMAL)
+        self.page.config(state = "disabled")
+        self.display.config(state = "normal")
         self.display.delete(1.0, END)
-        self.display.config(state = DISABLED)
+        self.display.config(state = "disabled")
         self.new_button.config(state = NORMAL)
         self.new_button.grid()
-        print(self.bar['value'])
+        #print(self.bar['value'])
 
 
 if __name__ == '__main__':
