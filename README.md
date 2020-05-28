@@ -20,4 +20,4 @@ Steps to install and run :
 1.Download the repository.
 2.Create a virtual environment. 
   Activate the environment. In the environment, $ pip install -r requirements.txt
-3.In the project directory, use $ python3 canvas.py to run the file. 
+3.In the Project directory, use $ python3 canvas.py to run the file. 
