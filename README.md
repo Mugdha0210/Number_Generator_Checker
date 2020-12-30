@@ -1,10 +1,3 @@
-Title : Know Your Numbers
-Group Name : SUM
-Batch : S1 and S4
-Group Members : Urvi Ashturkar      111803037  (S1)
-                Mugdha Bapat        111803041  (S1)
-                Soumitra Tonapi     111803103  (S4)
-
 About the project :
 We have implemented a Number Checker for the purpose of teaching how to draw numbers.
 The user is told a randomly generated number by a generated voice. On drawing the number on the canvas, the number is recognised and checked and score is given on a 'Progress Bar'. Further, if drawn correctly, the number is shown in devanagari with its number name.
